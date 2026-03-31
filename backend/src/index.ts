@@ -18,6 +18,14 @@ const fastify = Fastify({
 });
 
 async function bootstrap(): Promise<void> {
+  const port = parseInt(process.env.PORT ?? "3000", 10);
+  const host = process.env.HOST ?? "0.0.0.0";
+
+  console.log(`Starting server on ${host}:${port}`);
+  console.log(`NODE_ENV=${process.env.NODE_ENV}`);
+  console.log(`DATABASE_URL set: ${!!process.env.DATABASE_URL}`);
+  console.log(`JWT_SECRET set: ${!!process.env.JWT_SECRET}`);
+
   // Register CORS
   await fastify.register(cors, {
     origin: true,
@@ -27,16 +35,16 @@ async function bootstrap(): Promise<void> {
   // Register JWT
   const jwtSecret = process.env.JWT_SECRET;
   if (!jwtSecret) {
-    throw new Error("JWT_SECRET environment variable is required");
+    throw new Error("JWT_SECRET environment variable is required. Set it in Railway variables.");
   }
 
   await fastify.register(jwt, {
     secret: jwtSecret,
   });
 
-  // Health check
+  // Health check — registered before other routes so it always works
   fastify.get("/health", async () => {
-    return { status: "ok" };
+    return { status: "ok", timestamp: new Date().toISOString() };
   });
 
   // Register routes
@@ -49,11 +57,8 @@ async function bootstrap(): Promise<void> {
   await fastify.register(cronRoutes);
   await fastify.register(oneDriveRoutes);
 
-  const port = parseInt(process.env.PORT ?? "3000", 10);
-  const host = process.env.HOST ?? "0.0.0.0";
-
   await fastify.listen({ port, host });
-  fastify.log.info(`Server listening on ${host}:${port}`);
+  console.log(`Server listening on ${host}:${port}`);
 }
 
 bootstrap().catch((err) => {
