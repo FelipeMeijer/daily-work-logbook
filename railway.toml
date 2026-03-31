@@ -4,4 +4,4 @@ dockerfilePath = "backend/Dockerfile"
 
 [deploy]
 startCommand = "npx prisma migrate deploy && npm start"
-restartPolicyType = "on-failure"
+restartPolicyType = "ON_FAILURE"
