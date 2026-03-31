@@ -14,10 +14,6 @@ import oneDriveRoutes from "./routes/onedrive";
 const fastify = Fastify({
   logger: {
     level: process.env.LOG_LEVEL ?? "info",
-    transport:
-      process.env.NODE_ENV !== "production"
-        ? { target: "pino-pretty" }
-        : undefined,
   },
 });
 
