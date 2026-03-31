@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"c:/Users/Ai Hub/Documents/Claude/Projects/Daily work logbook/mobile/app/\\(tabs\\)/\")",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
