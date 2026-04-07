@@ -33,7 +33,7 @@ export const useLogStore = create<LogState>((set, get) => ({
   fetchEntry: async (date: string) => {
     set({ isLoading: true });
     try {
-      const entry = await api.get<LogEntry>(`/logs/${date}`);
+      const entry = await api.get<LogEntry>(`/entries/${date}`);
       set((state) => ({
         entries: { ...state.entries, [date]: entry },
       }));
@@ -53,9 +53,9 @@ export const useLogStore = create<LogState>((set, get) => ({
       const existing = get().entries[date];
       let saved: LogEntry;
       if (existing?.id) {
-        saved = await api.put<LogEntry>(`/logs/${date}`, { content, tags });
+        saved = await api.put<LogEntry>(`/entries/${date}`, { content, tags });
       } else {
-        saved = await api.post<LogEntry>('/logs', { date, content, tags });
+        saved = await api.post<LogEntry>('/entries', { date, content, tags });
       }
       set((state) => ({
         entries: { ...state.entries, [date]: saved },
@@ -75,7 +75,7 @@ export const useLogStore = create<LogState>((set, get) => ({
       if (params.page !== undefined) queryParts.push(`page=${params.page}`);
       const qs = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
 
-      const result = await api.get<{ entries: LogEntry[]; total: number }>(`/logs${qs}`);
+      const result = await api.get<{ entries: LogEntry[]; total: number }>(`/entries${qs}`);
       const entries = result?.entries ?? (result as unknown as LogEntry[]);
 
       if (params.page && params.page > 1) {

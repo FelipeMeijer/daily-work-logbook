@@ -24,7 +24,7 @@ export default function Verify() {
       .catch(() => {
         setError("Link is invalid or expired. Please request a new one.");
       });
-  }, []);
+  }, [searchParams, navigate, login]);
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">

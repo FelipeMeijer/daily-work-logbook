@@ -43,7 +43,11 @@ async function fetchTokens(params: Record<string, string>): Promise<TokenRespons
 }
 
 async function getAccessToken(userId: string): Promise<string> {
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   if (!user.oneDriveRefreshToken) {
     throw new Error("User has not connected Microsoft account");

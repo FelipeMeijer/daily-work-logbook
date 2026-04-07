@@ -67,7 +67,11 @@ export async function exchangeCodeForTokens(
  * Also persists the new refresh token if Microsoft rotates it.
  */
 async function getAccessToken(userId: string): Promise<string> {
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   if (!user.oneDriveRefreshToken) {
     throw new Error("User has not connected OneDrive");

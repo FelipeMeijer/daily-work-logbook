@@ -36,7 +36,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   fetchCheckIn: async (date: string) => {
     set({ isLoading: true });
     try {
-      const data = await api.get<CheckIn>(`/checkins/${date}`);
+      const data = await api.get<CheckIn>(`/checkin/${date}`);
       set({ checkIn: data });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -51,7 +51,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   checkIn: async () => {
     try {
-      const data = await api.post<CheckIn>('/checkins/start');
+      const data = await api.post<CheckIn>('/checkin');
       set({ checkIn: data });
     } catch (err) {
       console.error('checkIn error:', err);
@@ -63,7 +63,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     try {
       const current = get().checkIn;
       if (!current) return;
-      const data = await api.post<CheckIn>(`/checkins/${current.id}/end`);
+      const data = await api.post<CheckIn>('/checkout');
       set({ checkIn: data });
     } catch (err) {
       console.error('checkOut error:', err);

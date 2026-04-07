@@ -8,5 +8,6 @@ export async function requireAuth(
     await request.jwtVerify();
   } catch (err) {
     reply.status(401).send({ error: "Unauthorized" });
+    return;
   }
 }
