@@ -46,12 +46,13 @@ model CheckIn {
 }
 
 model ActionItem {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
   text      String
-  completed Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  completed Boolean   @default(false)
+  dueDate   String?   // YYYY-MM-DD, optional
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model MagicLink {

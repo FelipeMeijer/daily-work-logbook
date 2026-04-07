@@ -30,7 +30,7 @@ function getAuthUrl(state: string): string {
     client_id: clientId,
     response_type: "code",
     redirect_uri: getRedirectUri(),
-    scope: "offline_access Files.ReadWrite",
+    scope: "offline_access Files.ReadWrite Calendars.ReadWrite",
     state,
     response_mode: "query",
   });

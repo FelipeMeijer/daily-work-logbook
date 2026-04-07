@@ -53,7 +53,7 @@ export async function exchangeCodeForTokens(
     grant_type: "authorization_code",
     code,
     redirect_uri: redirectUri,
-    scope: "offline_access Files.ReadWrite",
+    scope: "offline_access Files.ReadWrite Calendars.ReadWrite",
   });
 
   await prisma.user.update({
@@ -76,7 +76,7 @@ async function getAccessToken(userId: string): Promise<string> {
   const tokens = await fetchTokens({
     grant_type: "refresh_token",
     refresh_token: user.oneDriveRefreshToken,
-    scope: "offline_access Files.ReadWrite",
+    scope: "offline_access Files.ReadWrite Calendars.ReadWrite",
   });
 
   // Persist rotated refresh token if provided

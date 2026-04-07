@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Verify from "./pages/Verify";
 import Dashboard from "./pages/Dashboard";
 import Feed from "./pages/Feed";
+import Calendar from "./pages/Calendar";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth();
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Route path="/verify" element={<Verify />} />
       <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/feed" element={<PrivateRoute><Feed /></PrivateRoute>} />
+      <Route path="/calendar" element={<PrivateRoute><Calendar /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

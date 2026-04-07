@@ -10,6 +10,8 @@ import notificationsRoutes from "./routes/notifications";
 import exportRoutes from "./routes/export";
 import cronRoutes from "./routes/cron";
 import oneDriveRoutes from "./routes/onedrive";
+import dispatchRoutes from "./routes/dispatch";
+import calendarRoutes from "./routes/calendar";
 
 const fastify = Fastify({
   logger: {
@@ -56,6 +58,8 @@ async function bootstrap(): Promise<void> {
   await fastify.register(exportRoutes);
   await fastify.register(cronRoutes);
   await fastify.register(oneDriveRoutes);
+  await fastify.register(dispatchRoutes);
+  await fastify.register(calendarRoutes);
 
   await fastify.listen({ port, host });
   console.log(`Server listening on ${host}:${port}`);

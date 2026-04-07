@@ -9,11 +9,13 @@ interface JwtPayload {
 
 interface CreateActionItemBody {
   text: string;
+  dueDate?: string; // YYYY-MM-DD
 }
 
 interface UpdateActionItemBody {
   completed?: boolean;
   text?: string;
+  dueDate?: string | null; // YYYY-MM-DD or null to clear
 }
 
 interface ActionItemParams {
@@ -44,14 +46,14 @@ export default async function actionItemsRoutes(fastify: FastifyInstance): Promi
     { preHandler: requireAuth },
     async (request, reply) => {
       const { userId } = request.user as JwtPayload;
-      const { text } = request.body;
+      const { text, dueDate } = request.body;
 
       if (!text || typeof text !== "string" || text.trim().length === 0) {
         return reply.status(400).send({ error: "Text is required" });
       }
 
       const item = await prisma.actionItem.create({
-        data: { userId, text: text.trim() },
+        data: { userId, text: text.trim(), dueDate: dueDate ?? null },
       });
 
       return reply.status(201).send(item);
@@ -64,7 +66,7 @@ export default async function actionItemsRoutes(fastify: FastifyInstance): Promi
     async (request, reply) => {
       const { userId } = request.user as JwtPayload;
       const { id } = request.params;
-      const { completed, text } = request.body;
+      const { completed, text, dueDate } = request.body;
 
       const existing = await prisma.actionItem.findUnique({ where: { id } });
 
@@ -72,9 +74,10 @@ export default async function actionItemsRoutes(fastify: FastifyInstance): Promi
         return reply.status(404).send({ error: "Action item not found" });
       }
 
-      const updateData: { completed?: boolean; text?: string } = {};
+      const updateData: { completed?: boolean; text?: string; dueDate?: string | null } = {};
       if (typeof completed === "boolean") updateData.completed = completed;
       if (typeof text === "string" && text.trim().length > 0) updateData.text = text.trim();
+      if (dueDate !== undefined) updateData.dueDate = dueDate ?? null;
 
       const item = await prisma.actionItem.update({
         where: { id },

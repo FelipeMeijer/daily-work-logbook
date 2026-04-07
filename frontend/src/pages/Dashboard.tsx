@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { LogIn, LogOut, Save, Plus, Trash2, Check } from "lucide-react";
 import api from "../api";
 import { useAuth } from "../AuthContext";
@@ -13,6 +13,7 @@ interface ActionItem {
   id: string;
   text: string;
   completed: boolean;
+  dueDate: string | null;
 }
 
 export default function Dashboard() {
@@ -29,6 +30,7 @@ export default function Dashboard() {
 
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
   const [newItem, setNewItem] = useState("");
+  const [newItemDue, setNewItemDue] = useState("");
 
   const loadAll = useCallback(async () => {
     const [entryRes, checkRes, actionsRes] = await Promise.all([
@@ -77,9 +79,13 @@ export default function Dashboard() {
   const addActionItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newItem.trim()) return;
-    const res = await api.post("/action-items", { text: newItem.trim() });
+    const res = await api.post("/action-items", {
+      text: newItem.trim(),
+      dueDate: newItemDue || null,
+    });
     setActionItems((prev) => [...prev, res.data]);
     setNewItem("");
+    setNewItemDue("");
   };
 
   const toggleItem = async (item: ActionItem) => {
@@ -114,6 +120,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-400 text-sm hidden sm:block">{user?.email}</span>
+          <a href="/calendar" className="text-gray-400 hover:text-white text-sm">Calendar</a>
           <button onClick={logout} className="text-gray-400 hover:text-white text-sm">Sign out</button>
         </div>
       </header>
@@ -178,19 +185,27 @@ export default function Dashboard() {
           <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
             <h2 className="font-semibold text-gray-200 mb-4">Action Items</h2>
 
-            <form onSubmit={addActionItem} className="flex gap-2 mb-4">
+            <form onSubmit={addActionItem} className="space-y-2 mb-4">
+              <div className="flex gap-2">
+                <input
+                  value={newItem}
+                  onChange={(e) => setNewItem(e.target.value)}
+                  placeholder="Add item..."
+                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button
+                  type="submit"
+                  className="bg-indigo-600 hover:bg-indigo-500 p-2 rounded-lg transition-colors"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
               <input
-                value={newItem}
-                onChange={(e) => setNewItem(e.target.value)}
-                placeholder="Add item..."
-                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                type="date"
+                value={newItemDue}
+                onChange={(e) => setNewItemDue(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
-              <button
-                type="submit"
-                className="bg-indigo-600 hover:bg-indigo-500 p-2 rounded-lg transition-colors"
-              >
-                <Plus size={16} />
-              </button>
             </form>
 
             <div className="space-y-2">
@@ -212,9 +227,16 @@ export default function Dashboard() {
                   >
                     {item.completed && <Check size={12} />}
                   </button>
-                  <span className={`flex-1 text-sm ${item.completed ? "line-through text-gray-500" : "text-gray-200"}`}>
-                    {item.text}
-                  </span>
+                  <div className="flex-1 min-w-0">
+                    <span className={`text-sm ${item.completed ? "line-through text-gray-500" : "text-gray-200"}`}>
+                      {item.text}
+                    </span>
+                    {item.dueDate && (
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Due {format(parseISO(item.dueDate), "MMM d")}
+                      </p>
+                    )}
+                  </div>
                   <button
                     onClick={() => deleteItem(item.id)}
                     className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all"
